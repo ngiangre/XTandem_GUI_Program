@@ -1,0 +1,95 @@
+***************
+
+Welcome! This README file explains how to use the in-house pre-X!Tandem java program.
+
+***************
+
+Contents:
+1. General Description
+2. Procedure
+3. FAQs
+4. Links
+
+
+1. General Description
+
+	This directory contains a Java Graphical User Interface (GUI) program, with associated txt files. It modifies the necessary input files to be used with the X!Tandem search 	algorithm. The input files guide the search. Default input files come with the tandem zip file when downloaded. The input files, which are in XML format, contain parameters 	that the search algorithm uses to match the peptide sequences from the MS/MS data to the proteins known in the organism's proteome (mouse, horse, fly, etc.). The organisms 	proteome is contained in a fasta file that can be downloaded from UniProt(uniprot.org(in UniProtKB box)complete and reference proteomes). Compiling and running this Java 	program will allow you to update the input files with parameters that are in accordance with the experiment. Afterwards, you will be able to use the new input files to run 	the X!Tandem Search algorithm to search for protein matches. 
+
+2. Procedure:
+        (Make sure your linux machine or server has the updated version of java (7.0) and has X11 or XQuartz capabilities. If you are running this on the augusta cluster, make sure 	you connect by typing "ssh -X username@augusta.biology.rochester.edu", which gives X11 capabilities in your session). 
+    a) Compile and run the java program. 
+    	On the command line, enter into JavaProgram/ directory with java and txt files if you haven't already done so (complete set of needed files outlined in 			CodeBook_JavaProgram). 
+        I. Type in the command "javac -Xlint Main.java" to compile the java code (may take a couple seconds) and then,
+        II. Type in the command "java Main" to run the program. The program may take some time to show up on the screen.
+    b) Choose files, enter new file names, select parameters, and modify files with the done button
+        (The following numbering is in accordance with the numbering in the program itself)
+        I. Input
+            a) Click the input button and select the appropriate input file (e.g. inputtest.xml). In the space immediately following, use the name provided or enter a new name for 	       your input file (required to have a .xml extension). When the done button is pressed, the selected input file is copied to another file with the new name entered.
+        II. Spectra
+            a) Click the spectra button and select an appropriate spectra file (e.g. B01_long.mgf) (requires .mgf, .pkl, .mzdata, .mzxml, .dta, or .gaml extension. This is further 	       explained in the X!Tandem API, group and parameter name "spectrum, path"). If you have spectra files with .txt extensions, follow these directions: In a separate 	       directory containing your desired files with .txt extensions you want to change to have mgf extensions, type this command into your command line "for file in *.txt; 	       do mv "$file" "`basename $file .txt`.mgf"; done". You can also have them renamed to other extensions, just replace the ".mgf" with ".yourdesiredextension". Can also 	       rename from other extensions, just change the two ".txt"s to ".yourfileextensions". Important! Make sure to have your desired txt files in a separate directory so as 	       to not change the extensions on other txt files!
+        III. Taxonomy
+            a) Click the taxonomy button to choose a taxonomy file (e.g. taxonomy1test.xml) (requires a .xml extension). In the space immediately following the button, enter a new 	       name for your taxonomy file (requires a .xml extension). When the done button is pressed, the selected taxonomy file from is copied to another file with the new name      	       entered.
+            b) Click the taxon button and select a taxon file (e.g. MOUSE.fasta) (requires .fasta extension).
+            c) Select an option whether to include reverse sequences. If "yes", the protein sequences are first searched normally and then reversed in memory and searched again. 	       Essentially, this runs a decoy search. By comparing the scores produced by this decoy search and the normal search, it is possible to very crudely estimate whether a 	       result is potentially a false positive. If "only", then results for the normal sequences will not be tested: only the reversed sequences will be used. The value "no" 	       is the default which will run a normal search. Group and parameter name is "scoring, include reverse". 
+        IV. Parameters File
+            a) Click the parameters button to choose a parameters file (e.g. default_inputtest.xml) (requires a .xml extension). In the space immediately following the button, enter 	       a new name for your parameters file (requires a .xml extension). When the done button is pressed, the selected parameters file is copied to another file with the new 	       name entered. 
+        V. Output File
+            a) Enter a name for the output file (requires a .xml extension).
+        	All the new, copied files will be put in the same directory as the input file selected via the input button. 
+        A. Fragment Mass Error: Select the mass value and units. The fragment ion mass error is the most important single parameter in finding a good peptide model for a tandem mass 	   spectrum. Peptide modeling for identification depends strongly on counting the number of predicted fragments that are found in a spectrum, so setting this value correctly 	   will determine the success or failure of an identification. Group and parameter name is "spectrum, fragment monoisotopic mass error" and "spectrum, fragment monoisotopic 	   mass error units".  
+        B. Residue Modifications
+            I. Mass Modifications: Select the modification. (You may enter more modification types into the residuemassmodifications.txt file, making sure each line has the name and 		the value (M1@X1) separated by a space). You can also have more then 1 modification by entering the comma (,) as a delimiter between the modification types. In the 		course of isolating a protein and generating peptides for use in protein identification experiments, it is often necessary to treat the protein sample with reagents 		that will modify all of the residues of a particular type. Commonly, cysteine residues are modified to disrupt and prevent the reformation of disulphide bonds. 		Additionally, other residues may be modified as a predictable side product of the protein-to-peptide cleavage process. The modifications encoded in this value are 		applied to every residue of a particular type of amino acid, without exception (100% efficiency on every particular amino acid). Group and parameter name is 			"residue, modification mass".
+            II. Potential Modification Mass: Same as above, except these modifications are in residuepotentialmassmodifications.txt and that these modifications are on some but not 		all the particular amino acid. Group and parameter name is "residue, potential modification mass".
+            III. Check for known PTMs (Post-Translational Modifications): Choose an option. It is known that different proteins have different post-translational modifications. In 		some cases, proteins may be highly modified by unusual modifications, such as the highly variable modification of histones or collagens. When the parameter is set to 		yes, an annotation file that contains the modifications known to be present in each protein will be added to the search, on a protein by protein basis. Any other 		modifications that you have specified will over-ride these annotations, if there is a conflict between the annotation and your specified modification. Group and 		parameter name is "protein, use annotations".
+        C. Refinement Specifications
+            I.  Potential Modification Mass: Select the modification. Similar to above but the file with the modifications is refinepotentialmassmodifications.txt. The format of 		this parameter is the same as the residue, potential modification mass parameter. See this discussion of this parameter for a general explanation of its meaning and 		use. The value for the refine version of this parameter is used to create a longer, more comprehensive list of relatively rare potential modifications. The value of 		the use potential modifications for full refinement parameter controls which steps in the refinement use this parameter.Group and parameter name is "refine, 			potential modification mass".
+            II. Potential Modification Motif: Select the motif. This parameter is used to modify residues selected by the residues surrounding the site of modification. Many 			biologically relevent modifications are performed by enzymes, which are normally affected by the sequence surrounding a residue being modified. Finding sequence 		motifs is fairly time consuming, so it is best done in the refinement process. Group and parameter name is "refine, potential modification motif".
+            III.Check for known PTMs (Post-Translational Modifications): Choose an option.  It is known that different proteins have different post-translational modifications. 		In some cases, proteins may be highly modified by unusual modifications, such as the highly variable modification of histones or collagens. When the parameter is set 		to yes, an annotation file that contains the modifications known to be present in each protein will be added to the search, on a protein by protein basis. Any other 		modifications that you have specified will over-ride these annotations, if there is a conflict between the annotation and your specified modification. Group and 		parameter name is "refine, use annotations".
+            IV. sAPs (point mutations): The last step in the refinement process is to test the selected sequences for the possibility of a point mutation in each one of the peptides 		generated with the initial cleavage chemistry. When this parameter is set to yes, point mutations are checked. Otherwise, this step is skipped. Group and parameter 		name is "refine, point mutations".
+            V. Semi-Style Cleavage: In real experiments, there are often contaminating proteolytic enzymes which will act on proteins in a difficult to predict manner. Therefore, 		the idea of a "semi-tryptic" digest was developed to attempt to compensate for this additional cleavage activity. This cleavage type assumes that one of the cleavage 		sites is tryptic ([KR]|{P}), but the other site may be at any residue. Group and parameter name is "refine, cleavage semi".
+            VI. Valid Expectation Value: When the refinement process begins, the expectation values for all of the peptides found in the first pass search are calculated. Any 			protein that contains at least one peptide with an expectation value lower than the value for this parameter is then included in the list of proteins that will be 		used during the refinement process. Group and parameter name is "refine, maximum valid expectation value".
+        D. Protein Cleavage Specification/Spectrum Conditioning
+            I. Cleave Site: Short peptides are generated from longer protein sequences by the use of either chemical or enzymatic cleavage. Both types of cleavage tend to have 		preferred sites of cleavage, based on the residues on either side of the peptide bond to be cleaved. Proteomics experiments frequently use enzymes with very strong 		sequence specificity, to limit the number of peptides generated and the assure that there are a reasonable number of peptides in the length range most useful for 		protein identification. Group and parameter name is "protein, cleavage site".
+            II. Semi-style Cleavage: In real experiments, there are often contaminating proteolytic enzymes which will act on proteins in a difficult to predict manner. Therefore, 		the idea of a "semi-tryptic" digest was developed to attempt to compensate for this additional cleavage activity. This cleavage type assumes that one of the cleavage 		sites is tryptic ([KR]|{P}), but the other site may be at any residue. Group and parameter name is "protein, cleavage semi".
+            III. remove redundant: When this value is set to yes, contrast angle filtering is used to remove similar mass spectra from a spectrum list. Group and parameter name is 		"spectrum, use contrast angle".
+                a. if no, choose angle: 0-90. Group and parameter name is "spectrum, contrast angle".
+            IV. Spectrum Synthesis: When X!TANDEM scores a model peptide sequence with a spectrum, it can take into account the probability that a particular bond will break 			preferentially, relative to other bonds. Yes: bonds N-terminal to proline residues and bonds C-terminal to aspartic acid, glutamic acid, valine, leucine, isoleucine, 		glutamine and asparagine are favored. This process effectively predicts a "synthetic" spectrum and rewards ions that agree with the predicted spectrum. No: all 		bonds are considered to be equivalent. Group and parameter name is "refine, spectrum synthesis".
+        Done: This button passes all the files chosen and parameters selected to the new files, resulting in updated input files ready for the tandem search. If there are errors 	that pop up after the button is pressed, do this procedure again to correct the mistake. See FAQs and CodeBook_JavaProgram for a complete description of the file parsing.
+3. FAQs
+     
+    Why use this program?
+        This Java GUI program is useful in easily creating input files to be used with the search algorithm X!Tandem. If you were not to use this program. You would need to edit the
+ 	input files manually (from the command line). This allows you to come in direct contact with the file syntax. This may be good for adding functionality and specification to 	our search, but it also may cause errors and X!Tandem to crash if you mess with the syntax. Using this program, you will not have to deal with manually creating new input 	files and updating them with new parameters, which may also be confusing given the file architectures. The GUI is a simpler avenue for creating and modifying the input files 	needed to run X!Tandem.
+    What is X!Tandem?  
+        X!Tandem is an open source software that can match tandem mass spectra with peptide sequences, in a process that has come to be known as protein identification. This 		software has a very simple, sophisticated application programming interface (API): it simply takes an XML file of instructions on its command line, and outputs the results 	into an XML file, which has been specified in the input XML file.
+        X!Tandem is analogous to Protein Prospector, the online search engine based out of UCSF. Since PP is not open source and requires internet access and competition between 	other users, you are subject to the status of the server, often waiting in queues to actually run your search, and it is very obscure how it works and how to understand 	their documentation. X!Tandem has very good documentation, can be run on your remote machine or department server, and often takes less time to run.
+    What are the input files?
+        The input files are XML (eXtensible Markup Language). This file format was developed to better store biological data and be readable across different computer types. 
+    What are XML Files and how are they parsed?
+        XML files are like tree diagram (e.g. Pascal's triangle). At the top you have the master, or parent, node. Branching off you have sub-nodes or child nodes. You may have 	different numbers of subnodes from the nodes depending on the information trying to be presented. 
+        The files are parsed by looping through all nodes at each level (like the branches at a certain height of a tree), then grabbing the desired node. For example, These files' 	parent node is called BIOML, which is a particular XML for storing biological information. You can loop through all of its child nodes and grab the particular one you are 	looking for. You can do this because each node has characteristic attributes. There may be more than one attribute at each node, and each may have a different value. 		Depending on the attribute and/or its value, you can select the node of interest to you. This is done through XML parsing libraries in Java. Refer to Links for guides and 	tutorial.
+    Why do notes appear when compiling the program on augusta?
+	These notes may appear when first running the program on augusta:
+		Note: ./SearchPanel.java uses unchecked or unsafe operations.
+		Note: Recompile with -Xlint:unchecked for details. 
+	You can ignore these for now. These come up because Java thinks some of the
+	operations in the code are "unsafe." But they're not. These can be removed by
+	changing the source code. They also may just show up because of augusta.
+    Why do notes come up while running the program in augusta?
+	I don't know. You may see notes like "MEvent. CASE!" Ignore them for now.
+	It might be because of augusta.
+    How do I add extra parameters to make the search algorithm more specific?
+	See the Groups and labels used in parameter parsing section in CodeBook_JavaProgram
+    What if I want to add modifications?
+	Add modifications to any of the txt files in the same format as those in the file originally. You can also add modifications in the editable text spaces in the program 	itself. 
+4. Links:
+
+X!Tandem
+http://www.thegpm.org/TANDEM/index.html
+
+XTandem API for parameters:
+http://www.thegpm.org/TANDEM/api/index.html
+
+XML parser sample tutorials
+http://www.w3schools.com/xml/default.asp
+

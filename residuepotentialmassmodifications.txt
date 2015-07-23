@@ -1,0 +1,9 @@
+
+Carbamidomethyl 57.021464@C
+Oxidation 15.994915@M
+Deamidation 0.9848@N
+Deamidation 0.9848@Q
+Phospho 79.966331@S
+Oxidation 15.994915@W
+Dioxidation 31.98983@W
+Dioxidation 31.98983@M

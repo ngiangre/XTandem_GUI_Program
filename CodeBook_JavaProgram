@@ -1,0 +1,413 @@
+******************
+
+This Code Book explains the flow of the GUI code, as well as gives a technical description
+of the variables, objects, and GUI components. Even more detail is given in the comments
+of the source code. 
+
+******************
+
+Contents
+1. Java Program source and text files
+2. Overview
+3. Global Variables
+4. Objects
+5. GUI Components
+6. Groups and labels used in parameter parsing
+7. Links
+
+1. Java Program source and text files (needed for proper execution):
+
+	CleavageSite.txt
+	FragMasses.txt
+	README.txt
+	refinemotifs.txt
+	refinepotentialmassmodifications.txt
+	residuemassmodifications.txt
+	residuepotentialmassmodifications.txt
+	ValidExpectationValue.txt
+	Main.java
+	ParseInputXML.java
+	ParseDefaultParameters.java
+	ParseTaxonomy.java
+	SearchPanel.java
+	
+2. Overview
+
+		You can start the program by compiling and running Main.java (see README_JavaProgram for complete instructions). All GUIs have a frame, where a panel or multiple 	panels are placed. 
+		In Main.java, the frame is created and the SearchPanel is placed on the frame. 3 objects are parameters
+	for the search panel, where each object stores the variable and component values for each of the 3 files parsed. They subject to the main functions of the parser program. 
+		SearchPanel.java (the SearchPanel class) would be considered the hub of the whole program. All that you see in the program 
+	is structured within two private classes of the SearchPanel class. The two private classes are 
+	the WestParameters and the EastParameters, each acting as their own panels within the larger SearchPanel. 
+	At the top of SearchPanel.java, many libraries are imported for use of components and functions, and many variables
+	are declared and/or instantiated (see the Objects section of this CodeBook_JavaProgram). Private String arrays are instantiated because these values won't be
+	needing any different options. Many GUI objects are declared to be used in the private classes. The SearchPanel constructor
+	is what is loaded onto the frame when the program is started. The layout of the SearchPanel is BorderLayout
+	which adds other components and panels in North, South, East, and West sections. 
+		The WestParameters class displays GUI components for choosing files and entering new file names. 
+	Values from both East and WestParameters get passed through the parsing objects here. All the files that are chosen and new file names 
+	entered are within this private class. 
+		The GUI is set up using GridBagLayout. In contrast to BorderLayout used
+	in the SearchPanel to organize the larger sections, GridBagLayout is more customizable, where it uses a grid 
+	format. GridBagLayout has confusing syntax and multiple parameters that allow this compatibility, which
+	is why it is explained in the GUI Components section of this CodeBook_JavaProgram. 
+		The ButtonActionListener of the WestParameters class allows for file parsing/updating to occur. 
+	When any of the file buttons are clicked on, the program "senses" this and 
+	allows for files from the current machine to be chosen. Also, the “done” button, which is actually declared,  
+	instantiated and added to the North BorderPanel section within the SearchPanel constructor, is "listened" to within this class. There are three things 
+	completed when the “done” button is pressed. 
+		First, the files chosen are copied to the new file names entered, so the files chosen are not
+	changed, just their file structures are used as templates to make the new files. This is done by executing linux 
+	commands, which would be done on the command line, from the program. This way, this is done automatically for
+	the user. 
+		Second, all the new file names, and all the values from the EastParameters class (discussed later), are 
+	are passed to the methods of the objects. The objects are "versions" of the XMLParsing classes ParseInputXML, 
+	ParseDefaultParametersXML, and ParseTaxonomyXML. In this way, all the methods/functions contained in the XMLParsers 
+	are "given" to these objects. So each of the values entered, chosen, or selected, are now part of a certain
+	object only. This specificity allows for any changes or modifications of values that occur in one object will
+	not occur in the others. The isolation of each object is very good to have when customizing and changing values 
+	specific to only that object. So now the values are passed through to the objects where they are now "saved" for their
+	own use (more on this in the Objects section). Also, the parsing methods of each object are called.
+	The XML Parsing Objects ParseInputXML, ParseDefaultParametersXML, and ParseTaxonomyXML "inherit" the
+	functions from ParseInputXML.java, ParseDefaultParametersXML.java, and ParseTaxonomyXML.java when instantiated. The functions are
+	the setters, getters, and XML parsers. The setters are what connect the SearchPanel to the objects. The parameter values are first stored in variables declared and 		instantiated as global variables in SearchPanel. Then these are passed to each object's setters, which then instantiates the
+	values of the object's declared variable, for which they have the same meaning. Then in the XML parser methods, 
+	the getters are what return the values of the variables set by the setters. The XML parser method works by first 
+	grabbing the new name entered for the file. The XML files are basically tree structures that you need to go through, or parse, in order to read data or enter 
+	data. Each XML file has a different tree structure so each parsing method is different. The parse methods are
+	parseInputXML(), parseTaxonomyXML(), and parseDefaultParametersXML(). These are called in the second part
+	of when the done button is pressed (see discussion of WestParameters). The parsing method is fully explained 
+	in the source code, but basically, the values of the parameters are entered in the tree structure (at branches 
+	or nodes) by looping through the nodes at each level, picking the right node by the attribute, and entering the
+	specified value via the getters. This is done when each parsing method is called.
+		Third, a dialog box pops up. It tells the user the program did what it's supposed to,
+	what to do if there were errors, and provides instructions on how to run the tandem search. 
+		The EastParameters class displays GUI components and collects values to be used for parsing/updating the XML files.
+	The constructor contains, just like WestParameters, most of the code for these tasks. GridBagLayout is also used 
+	like in WestParameters, which is explained above and in the GUI Components of this Code Book. In this private class, most of the parameters to 
+	be used in parsing/modifying the XML files are shown here. All the parameters are fully explained in the README, and 
+	the variables will be listed in the Variables section for this Code Book. After the constructor there are a number of
+	methods that allow for viewing the contents of the txt files listed in the Java program source and txt files section
+	of this Code Book. These methods are described in detail within the source files. 
+		This section summarizes the program parts and flow. To reiterate, multiple panels, which contain all the components for
+	the GUI, are added to a frame. All files chosen, new file names entered, and parameters selected are passed
+	to the three XML parser objects once the done button is pressed. Errors may occur and be known through the progress
+	of the program. When all is done, a dialog box will pop up telling you the program was successful, what to do if
+	errors occurred, and what to do next to run the tandem search. You may use this program multiple times in a session
+	making sure new file names, and possibly new parameters selected, are entered before each press of the 
+	done button. This will allow you to make many input files within a single session. After you are done creating input files, you may close this program by doing File->Quit. 
+	
+	
+3. Global Variables
+
+		Global variables used in this program are described here. Local variables, that is variables only affecting a 
+	local environment such as a method, loop, or conditional statement will only be discussed within comments of
+	the source files. The source file will be stated, and associated global variables will be listed
+	and described.
+	
+	Main.java:
+		-no global variables
+	
+	SearchPanel.java:
+		-WIDTH=600 and HEIGHT=600: gives dimensions of SearchPanel's panel.
+		-JButtons:
+			-inputButton: 
+				purpose is to choose an input XML file. If clicked, can choose files from machine. Value (file) passes to all parsing 
+				objects. Connection to objects explained below.
+			-spectraButton:
+				purpose is to choose a spectra mgf file. If clicked, can choose files from machine. Value (file) passes to input parsing 
+				object only. Connection to object parseInput via setSpectraFileName.
+			-taxonomyButton:
+				purpose is to choose a taxonomy XML file. If clicked, can choose files from machine. Value (file) passes to all parsing 
+				objects. Connection to object parseInput via setTaxonomyFileNamePath. Connection to
+				object parseTaxonomy via setTaxonomyFileNamePath. Connection to object parseParams 
+				via setTaxonomyFileNamePath
+			-taxonButton:
+				purpose is to choose a taxon fasta file. If clicked, can choose files from machine. Value (file) passes to one object.
+				Passes to object parseTaxonomy via setTaxonFileNamePath.
+			-paramsButton:
+				purpose is to choose a parameters XML file. If clicked, can choose files from machine. Value (file) passes
+				to two objects. Connection to object parseInput via setParamsFileNamePath. Connection to object
+				parseParams via setParamsFileNamePath.
+			-done:
+				purpose is to do three tasks. First, the files chosen are copied to the new file names entered. 
+				Second, all the new file names, and all the values from the EastParameters class (discussed later), are 
+				are passed to the methods of the objects. Third, a dialog box pops up. It tells the user the program did 
+				what it's supposed to, what to do if there were errors, and provides instructions on how to run 
+				the tandem search. This is more fully explained in the Overview section of this Code Book.
+				these variables are the buttons shown in the panel and either choose files or, in the case of the done button, performs three 
+				tasks of copying files, passing parameters to the parsing objects, and displaying an information dialog
+				box (all explained in the Overview section). 
+		-JComboBox: 
+			-revSeqAnswer:
+				purpose to store value to "c. include reversed sequences?" Connected to object parseParams via setRevSeqAnswer. 
+				Group and parameter name in tandem is "scoring, include reverse".
+			-fragMassError:
+				purpose to store value to "A. Fragment Mass Error:" of "A. Fragment Mass Error:". Connected to object parseParams via setFragMassError. 
+				Group and parameter name in tandem is "spectrum, fragment monoisotopic mass error".
+			-fragMassErrorUnits:
+				purpose to store value to "A. Fragment Mass Error:" of "A. Fragment Mass Error:". Connected to object parseParams via setFragMassErrorUnits. 
+				Group and parameter name in tandem is "spectrum, fragment monoisotopic mass error units".
+			-modMass:
+				purpose to store value to "I. Mass Modifications:" of "Residue Modifications". Connected to object parseParams via setModMass. 
+				Group and parameter name in tandem is "residue, modification mass".
+			-potModMass:
+				purpose to store value to "II. Potential Mass Mods.:" of "Residue Modifications". Connected to object parseParams via setPotModMass. 
+				Group and parameter name in tandem is "residue, potential modification mass".
+			-ptmsAnswer:
+				purpose to store value to "III. Check for known PTMs:" of "Residue Modifications". Connected to object parseParams via setPtmsAnswer. 
+				Group and parameter name in tandem is "protein, use annotations".
+			-rsPotModMass:
+				purpose to store value to "I. Potential Mod. Mass:" of "C. Refinement Specifications". Connected to object parseParams via setRSPotModMass. 
+				Group and parameter name in tandem is "refine, potential modification mass".
+			-rsPotModMotif:
+				purpose to store value to "II. Potential Mod. Motif:" of "C. Refinement Specifications". Connected to object parseParams via setRSPotModMotif. 
+				Group and parameter name in tandem is "refine, potential modification motif".
+			-rsPtms:
+				purpose to store value to "III. check for known PTMs: " of "C. Refinement Specifications". Connected to object parseParams via setRSPtms. 
+				Group and parameter name in tandem is "refine, use annotations".		
+			-sAPs:
+				purpose to store value to "IV. sAPs:" of "C. Refinement Specifications". Connected to object parseParams via setSAP. 
+				Group and parameter name in tandem is "refine, point mutations".
+			-ssCleavage:
+				purpose to store value to "IV. sAPs:" of "C. Refinement Specifications". Connected to object parseParams via setSSCleavage. 
+				Group and parameter name in tandem is "refine, cleavage semi".
+			-vExp:
+				purpose to store value to "VI. Valid Expectation Value:" of "C. Refinement Specifications". Connected to object parseParams via setVExp. 
+				Group and parameter name in tandem is "refine, maximum valid expectation value".
+			-cleavSite:
+				purpose to store value to "I. Cleave Site: " of "D. Prot. Cleav. Specif'n./Spec. Cond.". Connected to object parseParams via setCleaveSite. 
+				Group and parameter name in tandem is "protein, cleavage site".
+			-pcsSsCleavage:
+				purpose to store value to "II. Semi-style Cleavage:" of "D. Prot. Cleav. Specif'n./Spec. Cond.". Connected to object parseParams via 						setPcsSSCleavage. Group and parameter name in tandem is "protein, cleavage semi".
+			-removeRed:
+				purpose to store value to "III. remove redundant: " of "D. Prot. Cleav. Specif'n./Spec. Cond.". Connected to object parseParams via setRemoveRed. 
+				Group and parameter name in tandem is "spectrum, use contrast angle".
+			-specSynth: 
+				purpose to store value to "IV. Spectrum Synthesis: " of "D. Prot. Cleav. Specif'n./Spec. Cond.". Connected to object parseParams via setSpecSynth. 
+				Group and parameter name in tandem is "refine, spectrum synthesis".
+		-JTextArea: 
+			-description:
+				The text area in the North section of the SearchPanel that provides a short explanation of the program.
+			-enterInputFileName:
+				text area where you can enter a new input file name.
+			-enterTaxonomyFileName:
+				text area where you can enter a new taxonomy file name.
+			-enterParametersFileName:
+				text area where you can enter a new parameters file name.
+			-enterOutputFileName
+				text area where you can enter a name for your output file, which results from running 
+				the tandem search.
+			-angle:
+				text area where you can enter a contrast angle between 0 and 90 if the choice for 
+				"III. remove redundant: " of "D. Prot. Cleav. Specif'n./Spec. Cond." is yes. 
+				Group and parameter name in tandem is "spectrum, contrast angle".
+		String[]:
+			-revSeqOptions = { "no", "yes", "only" }
+				Only options available for "c. include reversed sequences?" of "3. Taxon".
+			-fragMassErrorUnitOptions = { "Da", "ppm" }
+				Only options available for "A. Fragment Mass Error:".
+			-ptmsOptions = { "no", "yes" }
+				Only options available for "III. Check for known PTMs:" of "B. Residue Modifications".
+			-rsPtmsOptions = { "no", "yes" }
+				Only options available for "III. check for known PTMs: " of "C. Refinement Specifications".
+			-sAPsOptions = { "no", "yes" }, ssCleavageOptions = { "no", "yes" }
+				Only options available for "IV. sAPs:" of "C. Refinement Specifications".
+			-ssCleavageOptions = { "no", "yes" }
+				Only options available for "V. Semi-Style Cleavage:" of "C. Refinement Specifications".
+			-pcsSsCleavageOptions = { "no", "yes" }
+				Only options available for "II. Semi-style Cleavage:" of "D. Prot. Cleav. Specif'n./Spec. Cond.".
+			-removeRedOptions = { "no", "yes" }
+				Only options available for "III. remove redundant: " of "D. Prot. Cleav. Specif'n./Spec. Cond.".
+			-specSynthOptions = { "yes", "no" }
+				Only options available for "IV. Spectrum Synthesis: " of "D. Prot. Cleav. Specif'n./Spec. Cond.". 
+
+	ParseTaxonomyXML.java:
+		String
+			-taxonName
+				This contains the taxon name, extracted from the fasta file.
+		File
+			-taxonFileNamePath
+				this contains the file name and path for the taxon file. In parseTaxonomy, the setter is 
+				setTaxonFileNamePath and the accessor is getTaxonFileNamePath.
+			
+4. Objects
+
+		In this program, there are three objects that perform the parsing operations. They are the instantiations of the
+	classes ParseInputXML, ParseTaxonomyXML, and ParseDefaultParametersXML. The instantiations
+	are parseInput, parseTaxonomy, and parseParams, respectively. These instantiations now provide all
+	the parsing functions and the methods for storing the values from the GUI. Each run of the program creates these
+	instantiations so throughout your current session you can choose different values of the parameters and
+	it updates the values for these objects. This allows for efficient parsing and modifying of the XML files.
+	The object instantiations are parseInput, parseTaxonomy, and parseParameters, respectively. 
+	They are first declared and instantiated in Main.java, and pass as parameters to the SearchPanel constructor, 
+	and then to the WestParameters constructor. The functions contained are called after the done button is pressed.
+	See Overview: Java Program Flow of Execution section of this Code Book to get full description of the 
+	tasks completed. 
+		In addition to the parsing objects, there are objects used in these parsing objects to store
+	the values of the parameters. I used Object just to be general, there are better objects to use.
+	The files are listed with accompanying objects with descriptions:
+	
+	ParseInputXML.java:
+		Object 
+			-taxonomyFileNamePath:
+				this contains the file name and path for the taxonomy file. In parseInput, the setter is 
+				setTaxonomyFileNamePath and the accessor is getTaxonomyFileNamePath.
+			-outputFileNamePath
+				this contains the file name and path for the output file. In parseInput, the setter is 
+				setOutputFileNamePath and the accessor is getOutputFileNamePath.
+			-paramsFileNamePath:
+				this contains the file name and path for the paramaters file. In parseInput, the setter is 
+				setParametersFileNamePath and the accessor is getParametersFileNamePath.
+			-inputFileNamePath:
+				this contains the file name and path for the input file. In parseInput, the setter is 
+				setInputFileNamePath and the accessor is getInputFileNamePath.
+			-taxonFileName
+				this contains the file name and path for the taxon file. In parseInput, the setter is 
+				setTaxonName and the accessor is getTaxonName.
+			-spectraFileNamePath
+				this contains the file name and path for the spectra file. In parseInput, the setter is 
+				setSpectraFileName and the accessor is getSpectraFileName.
+		
+	ParseTaxonomyXML.java:
+		Object
+			-taxonomyFileNamePath:
+				this contains the file name and path for the taxonomy file. In parseTaxonomy, the setter is 
+				setTaxonomyFileNamePath and the accessor is getTaxonomyFileNamePath.
+	
+	ParseDefaultParametersXML.java:
+		Object 
+			-revSeqAnswer:
+				purpose is to store the value to "scoring, include reverse" in tandem. In parseParams, the setter is
+				setRevSeqAnswer and the accessor is getRevSeqAnswer. 
+			-paramsFileNamePath:
+				purpose is to store the value to "list path, default parameters". In parseParams, the setter is
+				setParamsFileNamePath and the accessor is getParamsFileNamePath. This value is used to 
+				designate the copied file is parsed. 
+			-taxonomyFileNamePath:
+				purpose is to store the value to "list path, taxonomy information". In parseParams, the setter is
+				setParamsFileNamePath and the accessor is getParamsFileNamePath. 
+			-fragMassError:
+				purpose is to store the value to "spectrum, fragment monoisotopic mass error" in tandem. In parseParams, the setter is
+				setFragMassError and the accessor is getFragMassError. 
+			-fragMassErrorUnits:
+				purpose is to store the value to "spectrum, fragment monoisotopic mass error units" in tandem. In parseParams, the setter is
+				setFragMassErrorUnits and the accessor is setFragMassErrorUnits. 
+			-outputFileNamePath:
+				purpose is to store the value to "output, path". In parseParams, the setter is
+				setOutputFileNamePath and the accessor is getOutputFileNamePath. 
+			-modMass:
+				purpose is to store the value to "residue, modification mass" in tandem. In parseParams, the setter is
+				setModMass and the accessor is getModMass. 
+			-potModMass:
+				purpose is to store the value to "residue, potential modification mass" in tandem. In parseParams, the setter is
+				setPotModMass and the accessor is getPotModMass. 
+			-ptmsAnswer:
+				purpose is to store the value to "protein, use annotations" in tandem. In parseParams, the setter is
+				setPtmsAnswer and the accessor is getPtmsAnswer. 
+			-rsPotModMass:
+				purpose is to store the value to "refine, potential modification mass" in tandem. In parseParams, the setter is
+				setRSPotModMass and the accessor is getRSPotModMass. 
+			-rsPotModMotif:
+				purpose is to store the value to "refine, potential modification motif" in tandem. In parseParams, the setter is
+				setRSPotModMotif and the accessor is getRSPotModMotif. 				
+			-rsPtms:
+				purpose is to store the value to "refine, use annotations" in tandem. In parseParams, the setter is
+				setRSPtms and the accessor is getRSPtms. 	
+			-sAP:
+				purpose is to store the value to "refine, point mutations" in tandem. In parseParams, the setter is
+				setSAP and the accessor is getSAP. 	
+			-ssCleavage:
+				purpose is to store the value to "refine, cleavage semi" in tandem. In parseParams, the setter is
+				setSSCleavage and the accessor is getSSCleavage. 	
+			-vExp:
+				purpose is to store the value to "refine, maximum valid expectation value" in tandem. In parseParams, the setter is
+				setVExp and the accessor is getVExp.
+			-cleaveSite:
+				purpose is to store the value to "protein, cleavage site" in tandem. In parseParams, the setter is
+				setCleaveSite and the accessor is getCleaveSite.
+			-pcsSSCleavage:
+				purpose is to store the value to "protein, cleavage semi" in tandem. In parseParams, the setter is
+				setPscSSCleavage and the accessor is getPscSSCleavage.
+			-removeRed:
+				purpose is to store the value to "spectrum, use contrast angle" in tandem. In parseParams, the setter is
+				setRemoveRed and the accessor is getRemoveRed.
+			-specSynth:
+				purpose is to store the value to "refine, spectrum synthesis" in tandem. In parseParams, the setter is
+				setSpecSynth and the accessor is getSpecSynth.
+			-angle:
+				purpose is to store the value to "spectrum, contrast angle" in tandem. In parseParams, the setter is
+				setAngle and the accessor is getAngle.
+
+5. GUI Components
+
+		This Java program is a Graphical User Interface (GUI) with many components.
+	In particular, I will go over the layouts used for presenting and selecting 
+	parameters. 
+		The Search Panel puts together other panels, a text area, and a button via 
+	BorderLayout. This sections them in North, South, East and West. The North section 
+	contains the description (see above), the South section contains the done button
+	(see above), and the East and West sections contain the EastParameters and 
+	WestParameters, respectively. It is in the EastParameters and WestParameters
+	where the parameters are displayed in a GridBagLayout GridBagLayout is good to use for a more customized layout. But since you
+	can customize it, there are a lot of components. The parameter locations on the panels are designated
+	by GridBagConstraints (Objects c and d in West and EastParameters, respectively):
+	it specifies constraints for the components. For example, this program uses fill, weightx and y, and gridx
+	and y. If these are changed, it will alter the formatting and positions of the parameter locations. 
+	The values are chosen so that each parameter has sufficient space to display the selections and
+	enter text. You may play with these to alter the organization the way you want. I also put a helpful link at
+	the bottom of this Code Book.
+		When the objects for each parameter is added to the panel by add(), the c or d object of GridBagConstraints
+	also is added as an argument since it specifies the position of that parameter. Before each add,
+	there might be different values given to c and d, so each time that must be specified to the object c or d,
+	and just the object put as an argument when added. It's confusing at first, but by reading Java API and
+	other documentation, it can be understood and even modified for how you want the panels to be presented. 
+		
+6. Groups and labels used in parameter parsing
+
+	You can modify the following parameters from the GUI, see README_JavaProgram for GUI
+	parameter that corresponds to these parameters found in the xml file that modifies 
+	the tandem search algorithm:
+	
+		list path, default parameters
+		list path, taxonomy information
+		spectrum, fragment monoisotopic mass error
+		spectrum, fragment monoisotopic mass error units
+		spectrum, use contrast angle
+		spectrum, contrast angle
+		residue, modification mass
+		residue, potential modification mass
+		protein, cleavage site
+		protein, cleavage semi
+		protein, use annotations
+		refine, potential modification motif
+		refine, potential modification mass
+		refine, use annotations
+		refine, point mutations
+		refine, cleavage semi
+		refine, maximum valid expectation value
+		refine, spectrum synthesis
+		scoring, include reverse
+		output, path
+		
+	If you would like to add a parameter to the GUI: Create local and global variables and 
+	component (e.g. JComboBox), add component to the panel, pass global variable/component
+	storing desired value and pass, via parseParams, to setter method, also create
+	a getter method within ParseDefaultParametersXML, add if statement, following format
+	of the others, to the parseDefaultParametersXML() method. 
+
+7. Links
+
+	GridBagLayout
+	http://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
+	
+	Objects
+	http://docs.oracle.com/javase/tutorial/java/javaOO/objects.html
+	
+	X!Tandem API
+	http://www.thegpm.org/tandem/api/index.html
+	
+	Swing Components (e.g. JComboBox)
+	http://www.javabeginner.com/java-swing/java-swing-tutorial
+
+
